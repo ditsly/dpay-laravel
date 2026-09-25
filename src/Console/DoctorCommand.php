@@ -242,8 +242,11 @@ final class DoctorCommand extends Command
 
     private function checkStoreUid(DPayManager $dpay): void
     {
-        if ($dpay->hasStoreUid()) {
+        $length = $dpay->storeUidLength();
+        if ($length >= 16) {
             $this->add('ok', 'store_uid_ok');
+        } elseif ($length > 0) {
+            $this->add('fail', 'store_uid_short', ['length' => (string) $length, 'uid' => KeyFactory::generateStoreUid()]);
         } else {
             $this->add('fail', 'store_uid_missing', ['uid' => KeyFactory::generateStoreUid()]);
         }

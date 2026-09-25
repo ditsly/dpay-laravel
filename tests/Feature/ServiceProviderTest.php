@@ -186,6 +186,7 @@ final class ServiceProviderTest extends TestCase
 
         $this->reconfigure(['dpay.store_uid' => 'short']);
         $this->expectException(NotConfiguredException::class);
+        $this->expectExceptionMessage('DPAY_STORE_UID is too short (5 characters)');
         DPay::keys();
     }
 

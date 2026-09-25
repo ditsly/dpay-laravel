@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static string|null rawToken() the token exactly as .env gave it (dpay:doctor's whitespace check only)
  * @method static string tokenEnvKey()
  * @method static bool hasStoreUid()
+ * @method static int storeUidLength()
  * @method static \DPay\Http\BaseUrlPolicy baseUrlPolicy()
  * @method static string baseUrl()
  * @method static string locale()

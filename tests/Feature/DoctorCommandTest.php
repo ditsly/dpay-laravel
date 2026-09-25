@@ -55,6 +55,19 @@ final class DoctorCommandTest extends TestCase
     }
 
     #[Test]
+    public function aStoreUidThatIsSetButTooShortIsNamedAsSuchNotAsMissing(): void
+    {
+        $this->reconfigure(['dpay.store_uid' => 'shop-demo']);
+        $this->artisan('dpay:doctor --lang=en')
+            ->expectsOutputToContain('DPAY_STORE_UID is too short (9 characters; at least 16 random characters are needed) — replace it in .env with: DPAY_STORE_UID=')
+            ->doesntExpectOutputToContain('DPAY_STORE_UID is missing')
+            ->assertExitCode(1);
+        $this->artisan('dpay:doctor --lang=ar')
+            ->expectsOutputToContain('قيمة DPAY_STORE_UID قصيرة (9 أحرف')
+            ->assertExitCode(1);
+    }
+
+    #[Test]
     public function aSandboxTokenInLiveModeIsNamed(): void
     {
         $this->reconfigure(['dpay.mode' => 'live', 'dpay.api_token' => self::SANDBOX_TOKEN]);

@@ -257,7 +257,7 @@ class DPayManager
         $uid = $this->config['store_uid'] ?? null;
         $uid = is_string($uid) ? trim($uid) : '';
         if (strlen($uid) < 16) {
-            throw NotConfiguredException::storeUid();
+            throw NotConfiguredException::storeUid(strlen($uid));
         }
         $platform = $this->config['platform'] ?? 'laravel';
 
@@ -266,9 +266,15 @@ class DPayManager
 
     public function hasStoreUid(): bool
     {
+        return $this->storeUidLength() >= 16;
+    }
+
+    /** Characters in the configured `store_uid` (0 when unset); at least 16 are required. */
+    public function storeUidLength(): int
+    {
         $uid = $this->config['store_uid'] ?? null;
 
-        return is_string($uid) && strlen(trim($uid)) >= 16;
+        return is_string($uid) ? strlen(trim($uid)) : 0;
     }
 
     /**

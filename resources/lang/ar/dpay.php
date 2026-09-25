@@ -30,6 +30,7 @@ return [
         'mismatch' => 'سياسة اختلاف البيئة: :policy.',
         'store_uid_ok' => 'DPAY_STORE_UID مضبوط (مفاتيح التكرار ثابتة لكل طلب).',
         'store_uid_missing' => 'DPAY_STORE_UID غير موجود — أضف هذا السطر إلى .env: DPAY_STORE_UID=:uid',
+        'store_uid_short' => 'قيمة DPAY_STORE_UID قصيرة (:length أحرف، والمطلوب 16 حرفًا عشوائيًا على الأقل) — استبدلها في .env بهذا السطر: DPAY_STORE_UID=:uid',
         'http_client' => 'عميل HTTP: :client (تحقق TLS مفعّل، إعادة التوجيه مرفوضة).',
         'http_client_unverified' => 'عميل HTTP: :client — لا تستطيع الحزمة قراءة إعداداته: تأكد أنك بنيته بدون إعادة توجيه ومع التحقق من TLS (في Symfony: max_redirects => 0)، أو ثبّت guzzlehttp/guzzle ولا تمرّر شيئاً.',
         'http_client_missing' => 'لا يوجد عميل HTTP متوافق مع PSR-18 (:client) — نفّذ composer require guzzlehttp/guzzle.',

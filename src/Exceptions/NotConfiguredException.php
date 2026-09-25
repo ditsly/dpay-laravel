@@ -27,8 +27,16 @@ final class NotConfiguredException extends \RuntimeException implements DPayExce
         return new self('لم يُضبط سرّ الـ webhook — ضع DPAY_WEBHOOK_SECRET (whsec_…) في ملف .env. / No webhook secret — set DPAY_WEBHOOK_SECRET (whsec_…) in .env.');
     }
 
-    public static function storeUid(): self
+    /** @param int $length the configured value's length; 0 when it is not set */
+    public static function storeUid(int $length = 0): self
     {
+        if ($length > 0) {
+            return new self(sprintf(
+                'قيمة DPAY_STORE_UID قصيرة (%1$d أحرف) — يلزم 16 حرفًا عشوائيًا على الأقل؛ شغّل php artisan dpay:doctor لتوليد قيمة واحفظها في .env. / DPAY_STORE_UID is too short (%1$d characters) — it needs at least 16 random characters; run php artisan dpay:doctor to generate one and keep it in .env.',
+                $length,
+            ));
+        }
+
         return new self('لم يُضبط DPAY_STORE_UID — شغّل php artisan dpay:doctor لتوليد قيمة عشوائية واحفظها في .env. / DPAY_STORE_UID is not set — run php artisan dpay:doctor to generate one and keep it in .env.');
     }
 

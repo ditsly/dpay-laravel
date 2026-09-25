@@ -5,6 +5,13 @@ All notable changes to `dpay/laravel` are documented here. The format follows
 [Semantic Versioning](https://semver.org/). Versions track the SDK major
 (`dpay/dpay-php`).
 
+## [1.1.1] — 2026-09-25
+
+### Fixed
+- A `DPAY_STORE_UID` that is set but shorter than 16 characters is reported as too short, with
+  its length and a generated replacement — `dpay:doctor` and the `NotConfiguredException` said
+  it was missing, which sent merchants looking for a line already in their `.env`.
+
 ## [1.1.0] — 2026-09-25
 
 ### Added
@@ -69,5 +76,6 @@ First public release.
   manager refuses `serialize()` (a queued job must resolve the facade, not carry the manager).
   `rawToken()` serves `dpay:doctor`'s whitespace check only.
 
+[1.1.1]: https://github.com/ditsly/dpay-laravel/releases/tag/v1.1.1
 [1.1.0]: https://github.com/ditsly/dpay-laravel/releases/tag/v1.1.0
 [1.0.0]: https://github.com/ditsly/dpay-laravel/releases/tag/v1.0.0

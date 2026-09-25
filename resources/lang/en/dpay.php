@@ -30,6 +30,7 @@ return [
         'mismatch' => 'Environment mismatch policy: :policy.',
         'store_uid_ok' => 'DPAY_STORE_UID is set (Idempotency-Keys are deterministic per order).',
         'store_uid_missing' => 'DPAY_STORE_UID is missing — add this line to .env: DPAY_STORE_UID=:uid',
+        'store_uid_short' => 'DPAY_STORE_UID is too short (:length characters; at least 16 random characters are needed) — replace it in .env with: DPAY_STORE_UID=:uid',
         'http_client' => 'HTTP client: :client (TLS verified, redirects refused).',
         'http_client_unverified' => 'HTTP client: :client — the SDK cannot read its settings: make sure YOU built it with redirects off and TLS verification on (Symfony: max_redirects => 0), or install guzzlehttp/guzzle and inject nothing.',
         'http_client_missing' => 'No PSR-18 HTTP client found (:client) — composer require guzzlehttp/guzzle.',
