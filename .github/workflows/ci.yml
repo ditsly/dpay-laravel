@@ -11,7 +11,7 @@ on:
 
 jobs:
   quality:
-    name: validate · audit · pint · larastan (PHP 8.5 / Laravel 12)
+    name: validate · audit · pint · larastan (PHP 8.5 / Laravel 13 / Guzzle 8)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,8 +21,6 @@ jobs:
           extensions: json, mbstring, pdo_sqlite
           coverage: none
       - run: composer validate --strict
-      - name: Resolve dpay/dpay-php from its repository until Packagist lists it
-        run: composer config repositories.dpay-php vcs https://github.com/ditsly/dpay-php
       - run: composer install --no-interaction --no-progress --prefer-dist
       - run: composer audit
       - run: vendor/bin/pint --test
@@ -30,22 +28,32 @@ jobs:
       - run: vendor/bin/phpstan analyse --memory-limit=1G --no-progress -c phpstan.tests.neon
 
   tests:
-    name: testbench (PHP ${{ matrix.php }} × Laravel ${{ matrix.laravel }}, ${{ matrix.deps }} deps)
+    name: testbench (PHP ${{ matrix.php }} × Laravel ${{ matrix.laravel }} × Guzzle ${{ matrix.guzzle }}, ${{ matrix.deps }} deps)
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
+        # Laravel 11/12 require Guzzle 7; Laravel 13 allows 7 or 8 and runs both. Laravel 10 does not
+        # constrain Guzzle, so Composer admits Guzzle 8 there and one cell proves the package on it;
+        # a Laravel 10 app still keeps `guzzlehttp/guzzle: ^7` in its own composer.json (Laravel 10's
+        # HTTP client calls RequestException methods Guzzle 8 removed), and the other L10 cells pin 7.
         include:
-          - { php: '8.1', laravel: '10', testbench: '^8.22', deps: highest }
-          - { php: '8.1', laravel: '10', testbench: '^8.22', deps: lowest }
-          - { php: '8.2', laravel: '10', testbench: '^8.22', deps: highest }
-          - { php: '8.2', laravel: '11', testbench: '^9.0',  deps: highest }
-          - { php: '8.3', laravel: '10', testbench: '^8.22', deps: highest }
-          - { php: '8.3', laravel: '11', testbench: '^9.0',  deps: highest }
-          - { php: '8.3', laravel: '12', testbench: '^10.0', deps: highest }
-          - { php: '8.4', laravel: '11', testbench: '^9.0',  deps: highest }
-          - { php: '8.4', laravel: '12', testbench: '^10.0', deps: highest }
-          - { php: '8.5', laravel: '12', testbench: '^10.0', deps: highest }
+          - { php: '8.1', laravel: '10', testbench: '^8.22', guzzle: '7', deps: highest }
+          - { php: '8.1', laravel: '10', testbench: '^8.22', guzzle: '7', deps: lowest }
+          - { php: '8.2', laravel: '10', testbench: '^8.22', guzzle: '7', deps: highest }
+          - { php: '8.2', laravel: '10', testbench: '^8.22', guzzle: '8', deps: highest }
+          - { php: '8.2', laravel: '11', testbench: '^9.0',  guzzle: '7', deps: highest }
+          - { php: '8.3', laravel: '10', testbench: '^8.22', guzzle: '7', deps: highest }
+          - { php: '8.3', laravel: '11', testbench: '^9.0',  guzzle: '7', deps: highest }
+          - { php: '8.3', laravel: '12', testbench: '^10.0', guzzle: '7', deps: highest }
+          - { php: '8.4', laravel: '11', testbench: '^9.0',  guzzle: '7', deps: highest }
+          - { php: '8.4', laravel: '12', testbench: '^10.0', guzzle: '7', deps: highest }
+          - { php: '8.5', laravel: '12', testbench: '^10.0', guzzle: '7', deps: highest }
+          - { php: '8.3', laravel: '13', testbench: '^11.0', guzzle: '8', deps: highest }
+          - { php: '8.3', laravel: '13', testbench: '^11.0', guzzle: '7', deps: highest }
+          - { php: '8.3', laravel: '13', testbench: '^11.0', guzzle: '7', deps: lowest }
+          - { php: '8.4', laravel: '13', testbench: '^11.0', guzzle: '8', deps: highest }
+          - { php: '8.5', laravel: '13', testbench: '^11.0', guzzle: '8', deps: highest }
     steps:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
@@ -53,12 +61,12 @@ jobs:
           php-version: ${{ matrix.php }}
           extensions: json, mbstring, pdo_sqlite
           coverage: none
-      - name: Resolve dpay/dpay-php from its repository until Packagist lists it
-        run: composer config repositories.dpay-php vcs https://github.com/ditsly/dpay-php
-      - name: Pin the Testbench major for this cell
-        run: composer require --dev --no-update --no-interaction "orchestra/testbench:${{ matrix.testbench }}"
+      - name: Pin the Testbench and Guzzle majors for this cell
+        run: |
+          composer require --dev --no-update --no-interaction "orchestra/testbench:${{ matrix.testbench }}"
+          composer require --no-update --no-interaction "guzzlehttp/guzzle:${{ matrix.guzzle == '8' && '^8.0' || '^7.5' }}"
       - name: Laravel 10/11 are past security support — the matrix installs them on purpose
-        if: matrix.laravel != '12'
+        if: matrix.laravel == '10' || matrix.laravel == '11'
         run: composer config --json policy.advisories.ignore '["laravel/framework"]'
       - run: composer update --no-interaction --no-progress --prefer-dist ${{ matrix.deps == 'lowest' && '--prefer-lowest' || '' }}
       - run: vendor/bin/phpunit

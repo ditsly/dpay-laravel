@@ -2,7 +2,7 @@
 
 <div dir="rtl">
 
-حزمة DPay الرسمية لـ Laravel 10 و11 و12 — صفحة دفع مستضافة بنداء واحد، مسار webhook موقّع مع أحداث مُنمّطة، أمر `dpay:doctor` ثنائي اللغة، و`DPay::fake()` لاختباراتك. مبنية فوق [`dpay/dpay-php`](../php-sdk).
+حزمة DPay الرسمية لـ Laravel 10 و11 و12 و13 — صفحة دفع مستضافة بنداء واحد، مسار webhook موقّع مع أحداث مُنمّطة، أمر `dpay:doctor` ثنائي اللغة، و`DPay::fake()` لاختباراتك. مبنية فوق [`dpay/dpay-php`](../php-sdk).
 
 ## ما الذي تفعله الحزمة
 
@@ -190,6 +190,10 @@ Schedule::call(function () {
 | `DPAY_WEBHOOK_DISPATCH` | `sync` | `queue` يردّ 200 فورًا ويعالج في عامل الطابور |
 | `DPAY_WEBHOOK_PREVIOUS_SECRET` | — | يبقي السرّ القديم صالحًا أثناء التدوير |
 
+## المتطلبات والدعم
+
+PHP ≥ 8.1 (يتطلب Laravel 13 إصدار PHP ≥ 8.3)؛ Laravel `^10.0 || ^11.0 || ^12.0 || ^13.0`؛ Guzzle `^7.5 || ^8.0` — يثبّت Laravel 13 إصدار Guzzle 8، ويتطلب Laravel 11 و12 إصدار Guzzle 7، أما تطبيق Laravel 10 فيُبقي Guzzle 7: اترك `"guzzlehttp/guzzle": "^7"` في ملف `composer.json` الخاص بتطبيقك (وأعِده إن حذفته) لأن عميل HTTP في Laravel 10 نفسه يستدعي دوال في `RequestException` أزالها Guzzle 8، فيتعطّل `Http` في تطبيقك إن رُفع Guzzle إلى 8. على الإصدارين تبني الحزمة العميل مع التحقق من TLS وبلا تحويلات ومهلات 15 ث / 5 ث، ويذكر `dpay:doctor` العميل وإصدار Guzzle المستخدمَين فعلًا. مُختبرة على المصفوفة كاملة (PHP 8.1–8.5 × Laravel 10/11/12/13 حيث يدعم الإطار إصدار PHP، وLaravel 13 على Guzzle 8 وGuzzle 7، وLaravel 10 على Guzzle 8) مع Orchestra Testbench — انظر `tools/matrix.sh`. انتهت نافذة الدعم الأمني لـ Laravel 10 و11؛ الحزمة تدعمهما للتجّار الذين ما زالوا عليهما، لكن يُرجى الترقية.
+
 ## الاختبار
 
 </div>
@@ -211,7 +215,7 @@ $this->call('POST', '/dpay/webhook', [], [], [], $server, $raw)->assertOk();
 
 # English
 
-The official DPay package for Laravel 10, 11 and 12: hosted checkout in one fluent call, a signed-webhook route with typed events, a bilingual `dpay:doctor`, and `DPay::fake()` for your tests. Built on [`dpay/dpay-php`](../php-sdk).
+The official DPay package for Laravel 10, 11, 12 and 13: hosted checkout in one fluent call, a signed-webhook route with typed events, a bilingual `dpay:doctor`, and `DPay::fake()` for your tests. Built on [`dpay/dpay-php`](../php-sdk).
 
 ## What it does
 
@@ -280,7 +284,7 @@ Secret rotation: put the new secret in `DPAY_WEBHOOK_SECRET` and the old one in 
 
 ## Requirements & support
 
-PHP ≥ 8.1; Laravel `^10.0 || ^11.0 || ^12.0`; Guzzle 7 (the SDK builds it with TLS verification on, redirects off, 15 s / 5 s timeouts; `dpay:doctor` names the client actually in use and warns when it is one whose settings the SDK cannot verify). Secrets never leave the manager: `DPay::config()` / `webhookConfig()` return masked copies, `dd(app('dpay'))` shows no token, and the manager, the SDK client and the verifier refuse `serialize()` — a queued job resolves the `DPay` facade inside `handle()` instead of carrying them. Tested on the full matrix (PHP 8.1–8.5 × Laravel 10/11/12 where the framework supports the PHP version) with Orchestra Testbench — see `tools/matrix.sh`. Laravel 10 and 11 are past their security windows; the package supports them for merchants who still run them, but please upgrade.
+PHP ≥ 8.1 (Laravel 13 needs PHP ≥ 8.3); Laravel `^10.0 || ^11.0 || ^12.0 || ^13.0`; Guzzle `^7.5 || ^8.0` — Laravel 13 installs Guzzle 8, Laravel 11 and 12 require Guzzle 7, and a Laravel 10 application pins Guzzle 7 (keep it: Laravel 10's own HTTP client predates Guzzle 8). On either major the SDK builds the client with TLS verification on, redirects off and 15 s / 5 s timeouts; `dpay:doctor` names the client and Guzzle major actually in use and warns when it is one whose settings the SDK cannot verify. Secrets never leave the manager: `DPay::config()` / `webhookConfig()` return masked copies, `dd(app('dpay'))` shows no token, and the manager, the SDK client and the verifier refuse `serialize()` — a queued job resolves the `DPay` facade inside `handle()` instead of carrying them. Tested on the full matrix (PHP 8.1–8.5 × Laravel 10/11/12/13 where the framework supports the PHP version, Laravel 13 on both Guzzle 8 and Guzzle 7, and Laravel 10 on Guzzle 8) with Orchestra Testbench — see `tools/matrix.sh`. Laravel 10 and 11 are past their security windows; the package supports them for merchants who still run them, but please upgrade.
 
 ## Docs
 

@@ -6,6 +6,7 @@ namespace DPay\Laravel\Tests\Feature;
 
 use DPay\Laravel\Facades\DPay;
 use DPay\Laravel\Tests\TestCase;
+use GuzzleHttp\ClientInterface;
 use Illuminate\Support\Facades\Artisan;
 use PHPUnit\Framework\Attributes\Test;
 
@@ -26,6 +27,17 @@ final class DoctorCommandTest extends TestCase
             ->expectsOutputToContain('DPAY_STORE_UID is set')
             ->expectsOutputToContain('اجتازت كل الفحوص.')
             ->expectsOutputToContain('All checks passed.')
+            ->assertExitCode(0);
+    }
+
+    /** Guzzle 7 (Laravel 10–12) and Guzzle 8 (Laravel 13) are both named by their real major. */
+    #[Test]
+    public function theHttpClientLineNamesTheInstalledGuzzleMajor(): void
+    {
+        $major = (string) ClientInterface::MAJOR_VERSION;
+        self::assertContains($major, ['7', '8']);
+        $this->artisan('dpay:doctor --lang=en')
+            ->expectsOutputToContain('HTTP client: Guzzle '.$major.' (GuzzleHttp\Client) (TLS verified, redirects refused).')
             ->assertExitCode(0);
     }
 
