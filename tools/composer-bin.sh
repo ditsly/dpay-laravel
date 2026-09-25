@@ -2,7 +2,9 @@
 # Sourced by the package matrix scripts. Extracts the `composer` binary (a
 # PHAR runnable by any PHP) from the official `composer:2` image — content
 # pinned by the image digest Docker verified on pull — so no cell ever runs an
-# installer script fetched over the network. Cached under integrations/.cache.
+# installer script fetched over the network. Cached under the parent of this
+# script's directory: integrations/.cache in the monorepo, .cache/ in a
+# published plugin repository (bin/composer-bin.sh).
 #
 #   composer_bin_from_image   → prints the host path of the binary; exit 1 on failure
 composer_bin_from_image() {
