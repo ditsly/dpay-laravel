@@ -1,0 +1,64 @@
+# CI for the published package repository (ditsly/dpay-laravel, exported from
+# integrations/laravel by integrations/tools/export.mjs). Inside the monorepo the same gates run through `composer check`
+# and the Docker matrix script (tools/matrix.sh).
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+
+jobs:
+  quality:
+    name: validate · audit · pint · larastan (PHP 8.5 / Laravel 12)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: json, mbstring, pdo_sqlite
+          coverage: none
+      - run: composer validate --strict
+      - name: Resolve dpay/dpay-php from its repository until Packagist lists it
+        run: composer config repositories.dpay-php vcs https://github.com/ditsly/dpay-php
+      - run: composer install --no-interaction --no-progress --prefer-dist
+      - run: composer audit
+      - run: vendor/bin/pint --test
+      - run: vendor/bin/phpstan analyse --memory-limit=1G --no-progress
+      - run: vendor/bin/phpstan analyse --memory-limit=1G --no-progress -c phpstan.tests.neon
+
+  tests:
+    name: testbench (PHP ${{ matrix.php }} × Laravel ${{ matrix.laravel }}, ${{ matrix.deps }} deps)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { php: '8.1', laravel: '10', testbench: '^8.22', deps: highest }
+          - { php: '8.1', laravel: '10', testbench: '^8.22', deps: lowest }
+          - { php: '8.2', laravel: '10', testbench: '^8.22', deps: highest }
+          - { php: '8.2', laravel: '11', testbench: '^9.0',  deps: highest }
+          - { php: '8.3', laravel: '10', testbench: '^8.22', deps: highest }
+          - { php: '8.3', laravel: '11', testbench: '^9.0',  deps: highest }
+          - { php: '8.3', laravel: '12', testbench: '^10.0', deps: highest }
+          - { php: '8.4', laravel: '11', testbench: '^9.0',  deps: highest }
+          - { php: '8.4', laravel: '12', testbench: '^10.0', deps: highest }
+          - { php: '8.5', laravel: '12', testbench: '^10.0', deps: highest }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: json, mbstring, pdo_sqlite
+          coverage: none
+      - name: Resolve dpay/dpay-php from its repository until Packagist lists it
+        run: composer config repositories.dpay-php vcs https://github.com/ditsly/dpay-php
+      - name: Pin the Testbench major for this cell
+        run: composer require --dev --no-update --no-interaction "orchestra/testbench:${{ matrix.testbench }}"
+      - name: Laravel 10/11 are past security support — the matrix installs them on purpose
+        if: matrix.laravel != '12'
+        run: composer config --json policy.advisories.ignore '["laravel/framework"]'
+      - run: composer update --no-interaction --no-progress --prefer-dist ${{ matrix.deps == 'lowest' && '--prefer-lowest' || '' }}
+      - run: vendor/bin/phpunit

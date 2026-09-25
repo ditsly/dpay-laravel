@@ -1,0 +1,4 @@
+# Orchestra Testbench workbench config: lets `vendor/bin/testbench dpay:doctor` run the
+# package's commands against a throwaway app (the test suite registers the provider itself).
+providers:
+  - DPay\Laravel\DPayServiceProvider

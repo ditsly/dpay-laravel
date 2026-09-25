@@ -1,0 +1,14 @@
+# Package code at level max with Larastan; tests at level 5 (see phpstan.tests.neon).
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: max
+    phpVersion: 80100
+    paths:
+        - src
+        - routes
+        - database
+    tmpDir: .phpstan.cache
+    treatPhpDocTypesAsCertain: false
+    reportUnmatchedIgnoredErrors: true

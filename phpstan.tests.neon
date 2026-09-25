@@ -1,0 +1,11 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 5
+    phpVersion: 80100
+    paths:
+        - tests
+        - examples
+    tmpDir: .phpstan.tests.cache
+    reportUnmatchedIgnoredErrors: true

@@ -1,0 +1,87 @@
+{
+    "name": "dpay/laravel",
+    "description": "Official DPay Laravel package — hosted checkout in one fluent call, a signed-webhook route with typed events, dpay:doctor, and DPay::fake() for your tests. Laravel 10, 11 and 12.",
+    "license": "MIT",
+    "type": "library",
+    "keywords": [
+        "dpay",
+        "laravel",
+        "payments",
+        "libya",
+        "checkout",
+        "webhooks",
+        "edfali",
+        "sadad",
+        "moamalat"
+    ],
+    "homepage": "https://dpay.ly",
+    "support": {
+        "docs": "https://dpay.ly/docs/api",
+        "issues": "https://github.com/ditsly/dpay-laravel/issues",
+        "source": "https://github.com/ditsly/dpay-laravel"
+    },
+    "require": {
+        "php": ">=8.1",
+        "ext-json": "*",
+        "dpay/dpay-php": "^1.0",
+        "guzzlehttp/guzzle": "^7.5",
+        "illuminate/cache": "^10.0 || ^11.0 || ^12.0",
+        "illuminate/console": "^10.0 || ^11.0 || ^12.0",
+        "illuminate/contracts": "^10.0 || ^11.0 || ^12.0",
+        "illuminate/database": "^10.0 || ^11.0 || ^12.0",
+        "illuminate/events": "^10.0 || ^11.0 || ^12.0",
+        "illuminate/http": "^10.0 || ^11.0 || ^12.0",
+        "illuminate/routing": "^10.0 || ^11.0 || ^12.0",
+        "illuminate/support": "^10.0 || ^11.0 || ^12.0"
+    },
+    "require-dev": {
+        "larastan/larastan": "^2.9 || ^3.0",
+        "laravel/pint": "^1.13",
+        "orchestra/testbench": "^8.22 || ^9.0 || ^10.0",
+        "phpunit/phpunit": "^10.5 || ^11.5 || ^12.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "DPay\\Laravel\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "DPay\\Laravel\\Tests\\": "tests/",
+            "DPay\\Laravel\\Examples\\Shop\\": "examples/shop/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        },
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "DPay\\Laravel\\DPayServiceProvider"
+            ],
+            "aliases": {
+                "DPay": "DPay\\Laravel\\Facades\\DPay"
+            }
+        },
+        "branch-alias": {
+            "dev-main": "1.0.x-dev"
+        }
+    },
+    "scripts": {
+        "cs": "pint --test",
+        "cs:fix": "pint",
+        "stan": "phpstan analyse --memory-limit=1G",
+        "test": "phpunit",
+        "check": [
+            "@composer validate --strict",
+            "@cs",
+            "@stan",
+            "@test"
+        ]
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

@@ -1,0 +1,31 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+/**
+ * Exactly-once webhook processing (`dpay.webhook.dedupe = database`): one
+ * row per (live, id, event); the unique index makes the claim atomic across
+ * every worker. Prune rows older than a week or so if the table grows.
+ */
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create(config('dpay.webhook.table', 'dpay_webhook_events'), function (Blueprint $table): void {
+            $table->id();
+            $table->string('dedupe_key', 160)->unique();
+            $table->string('event', 64)->index();
+            $table->timestamp('received_at')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists(config('dpay.webhook.table', 'dpay_webhook_events'));
+    }
+};
